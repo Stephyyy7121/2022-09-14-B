@@ -4,7 +4,16 @@ public class Album implements Comparable<Album>{
 	private Integer albumId;
 	private String title;
 	private Double durata;
+	private int numTrack;
 	
+	public int getNumTrack() {
+		return numTrack;
+	}
+
+	public void setNumTrack(int numTrack) {
+		this.numTrack = numTrack;
+	}
+
 	public Album(Integer albumId, String title, Double durata) {
 		super();
 		this.albumId = albumId;

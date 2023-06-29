@@ -5,7 +5,10 @@
 package it.polito.tdp.itunes;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+
+import it.polito.tdp.itunes.model.Album;
 import it.polito.tdp.itunes.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -34,7 +37,7 @@ public class FXMLController {
     private Button btnSet; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbA1"
-    private ComboBox<?> cmbA1; // Value injected by FXMLLoader
+    private ComboBox<Album> cmbA1; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtDurata"
     private TextField txtDurata; // Value injected by FXMLLoader
@@ -44,19 +47,80 @@ public class FXMLController {
 
     @FXML // fx:id="txtX"
     private TextField txtX; // Value injected by FXMLLoader
+    
+    private boolean grafoCreato = false;
 
     @FXML
     void doComponente(ActionEvent event) {
     	
+    	txtResult.clear();
+    	if (!grafoCreato) {
+    		txtResult.setText("Il grafo non e' stato creato");
+    	}
+    	
+    	Album album = cmbA1.getValue();
+    	
+    	if (album == null) {
+    		txtResult.appendText("Inserire un album");
+    	}
+    	
+    	List<Album> connessa = this.model.getComponente(album);
+    	txtResult.appendText("Componente connessa - " + album.getTitle() + "\nDimensione componente = " + connessa.size()+ "\n#Album componente = " + this.model.numeroBrani(connessa));
+    	if (connessa.contains(album)) {
+    		txtResult.appendText("\nYes");
+    	}
     }
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
     	
+    	String input = txtDurata.getText();
+    	
+    	if (input == "") {
+    		txtResult.setText("Non e' stato inserito un valore");
+    	}
+    	
+    	Double durata = 0.0;
+    	try {
+    		durata = Double.parseDouble(input);
+    	}catch (NumberFormatException e) {
+    		txtResult.setText("Non e' stato inserito un valore accettabile");
+    		return ;
+    	}
+    	
+    	this.model.creaGrafo(durata);
+    	this.grafoCreato = true;
+    	
+    	txtResult.appendText("Grafo creato !\n#Vertici: " + this.model.getNumVertici() + "\n#Archi: " + this.model.getNumArchi());
+    	
+    	this.cmbA1.getItems().addAll(this.model.getVertici());
     }
 
     @FXML
     void doEstraiSet(ActionEvent event) {
+    	
+    	txtResult.clear();
+    	if (!grafoCreato) {
+    		txtResult.setText("Il grafo non e' stato creato");
+    	}
+    	
+    	String input = this.txtX.getText();
+    	Album album = cmbA1.getValue();
+    	if (album == null) {
+    		txtResult.appendText("Inserire un album");
+    	}
+    	
+    	double dTOT = 0.0;
+    	try {
+    		dTOT = Double.parseDouble(input);
+    	}catch (NumberFormatException e) {
+    		return;
+    	}
+    	List<Album> finale = this.model.getAlbumFinale(dTOT, album);
+    	for (Album a : finale) {
+    		txtResult.appendText(a.toString()+"\n");
+    	}
+    	
 
     }
 
